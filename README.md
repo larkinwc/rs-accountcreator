@@ -1,6 +1,7 @@
 # rs-accountcreator
+Python tool to create accounts. For educational purposes only!.
 
-# Prerequisites
+## Prerequisites
 Python 3.6
 selenium
 pyvirtualdisplay
@@ -8,9 +9,11 @@ requests
 python_anticaptcha
 pillow
 
-# Usage
+## Usage
 To use the account creator,  follow the following format
+
 Format: (program name) input.extension proxies.extension (key)
+
 Ex: Example: rsacc.py input.txt proxies.txt (key)
 
 your input file should be as follows:
