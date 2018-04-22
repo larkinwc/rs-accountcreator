@@ -13,7 +13,6 @@ def register(email, username, password, proxy, key):
 	print("ok\n attempting registration of", email, "password is:", password)
 
 	b = Browser()
-	#b.startHidden()
 	b.size = ["1600", "900"]
 	if proxy == "none":
 		proxy = ""
@@ -26,6 +25,7 @@ def register(email, username, password, proxy, key):
 		b.startDriverChrome()
 	else:
 		b.startDriverChrome('res/chromedriver.exe')
+		b.hide()
 	try:
 		b.get("https://secure.runescape.com/m=account-creation/g=oldscape/create_account")
 		time.sleep(3)
