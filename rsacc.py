@@ -2,15 +2,14 @@ import sys,string, random, time, os, platform, datetime, json
 
 from selenium import webdriver
 from random import randint
-#from pyvirtualdisplay import Display #used for virtual X environment
+from pyvirtualdisplay import Display #used for virtual X environment
 from browsertools import Browser
-
 systeminforma = sys.platform
 
-def pass_gen(size=8, chars=string.ascii_lowercase + string.ascii_uppercase + string.digits + '!'):
+def pass_gen(size=8, chars=string.ascii_lowercase + string.digits):
 	return ''.join(random.choice(chars) for _ in range(size))
 
-def register(email, password, proxy, key):
+def register(email, username, password, proxy, key):
 	print("ok\n attempting registration of", email, "password is:", password)
 
 	b = Browser()
@@ -26,56 +25,42 @@ def register(email, password, proxy, key):
 		b.startDriverChrome()
 	else:
 		b.startDriverChrome('res/chromedriver.exe')
-		#b.hide()
+		b.hide()
 	try:
-		#b.driver.get("http://service.mail.com/registration.html")
+		b.get("https://secure.runescape.com/m=account-creation/g=oldscape/create_account")
 		time.sleep(3)
-		b.driver.find_element_by_id("id11f").click()
-		b.driver.find_element_by_id("id121").click()
-		b.driver.find_element_by_id("id128").click()
-		#Select(b.driver.find_element_by_id("id128")).select_by_visible_text("Jan")
-		b.driver.find_element_by_id("id128").click()
-		b.driver.find_element_by_id("id125").click()
-		#Select(b.driver.find_element_by_id("id125")).select_by_visible_text(str(randint(1,26)))
-		b.driver.find_element_by_id("id125").click()
-		b.driver.find_element_by_id("id129").click()
-		#Select(b.driver.find_element_by_id("id129")).select_by_visible_text(str(randint(1960,1995)))
-		b.driver.find_element_by_id("id129").click()
-		b.driver.find_element_by_id("id132").click()
-		b.driver.find_element_by_id("id132").clear()
-		b.driver.find_element_by_id("id132").send_keys(email)
-		b.driver.find_element_by_id("id13c").click()
-		b.driver.find_element_by_id("id13c").clear()
-		b.driver.find_element_by_id("id13c").send_keys(password)
-		b.driver.find_element_by_id("id13f").click()
-		b.driver.find_element_by_id("id13f").clear()
-		b.driver.find_element_by_id("id13f").send_keys(password)
-		b.driver.find_element_by_id("id144").click()
 		try:
-			b.driver.execute_script("arguments[0].scrollIntoView()", b.driver.find_element_by_id("id147"))
+			b.driver.find_elements_by_class_name('cc_btn_accept_all')[0].click()
+		except:
+			pass
+		time.sleep(2)
+		b.driver.find_element_by_id('create-email').send_keys(email)
+		time.sleep(2)
+		b.driver.find_element_by_id('create-password').send_keys(password)
+		time.sleep(2)
+		b.driver.find_element_by_id('display-name').send_keys(username)
+		time.sleep(2)
+		b.driver.find_element_by_id('create-age').send_keys(str(randint(22, 55)))
+		time.sleep(2)
+		try:
+			login_button = b.driver.find_element_by_id('create-submit')
+		except:
+			print('play button not found')
+		time.sleep(2)
+		try:
+			b.driver.execute_script("arguments[0].scrollIntoView()", login_button)
 		except:
 			print('cannot scroll')
-		b.driver.find_element_by_id("id147").click()
-		b.driver.find_element_by_id("id147").click()
-		b.driver.find_element_by_xpath("//a[@id='id134']/span").click()
-		b.driver.find_element_by_id("id147").click()
 		time.sleep(1)
-		#Select(b.driver.find_element_by_id("id147")).select_by_visible_text("What was the make of your first car?")
-		b.driver.find_element_by_id("id147").click()
-		b.driver.find_element_by_id("id149").click()
-		b.driver.find_element_by_id("id149").clear()
-		b.driver.find_element_by_id("id149").send_keys("security answer")
-
 		val = None
 		try:
 			b.driver.find_element_by_id('google-recaptcha') #if there is a captcha so solve
-			val = b.solveReCaptcha(key)
+			val = b.solveReCaptcha(key, '6LccFA0TAAAAAHEwUJx_c1TfTBWMTAOIphwTtd1b') #runescape account creation sitekey, issue is they hide it with script AFAIK
 			b.driver.execute_script('document.getElementById("g-recaptcha-response").value = "' + val + '"')
 			print('value inside try', val)
 		except:
 			print('error solving captcha')
-
-		b.driver.find_element_by_id("id14e").click()
+		login_button.click()
 		time.sleep(3)
 		print("account registered \n")
 	except:
@@ -114,10 +99,11 @@ def main():
 	input_p = open(proxy, 'r')
 	output = open('output.txt', 'w')
 	for i in input_e:
+		print('meme')
 		info = i.split(',')
 		password = pass_gen()
 		proxy = input_p.readline().rstrip()
-		register(info[0].strip(), password, proxy, key)
+		register(info[0], info[1].strip(), password, proxy, key)
 		output.write(str (info[0]) + ',' + str(info[1].strip()) + ',' + password + ',' +  str(proxy))
 
 if __name__ == "__main__":
